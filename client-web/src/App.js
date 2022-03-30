@@ -10,25 +10,26 @@ function App() {
   const [datas, setDatas] = useState([])
   // useFirestoreConnect(() => [{collection: "sensors/5190/samples", storeAs: "samples", where:['date', '<', Date.now()], }])
   useFirestoreConnect(() => [{
-    collection: "sensors/0013a20041a72961/samples",
-    storeAs: "samples",
+    collection: "questions/",
+    storeAs: "questions",
     // limit: 10,
     // orderBy: ["date", "desc"]
     // where: ['date', '>', Date.now()- (1000 * 60*10)]
   }])
-  const samples = useSelector((state) => state.firestore.ordered.samples)
+  const questions = useSelector((state) => state.firestore.ordered.questions)
 
   useEffect(() => {
-    console.log(samples?.length)
-    if (samples)
-      {
-        const slice = samples
-          .map((sample) => ({x: sample?.date, y: sample?.value.toString()}))
-          .slice(samples?.length - 50, samples?.length - 1);
-        console.log(slice)
-        setDatas(slice)
-      }
-  }, [samples])
+    console.log("test")
+    console.log(questions)
+    // if (questions)
+    //   {
+    //     const slice = questions
+    //       .map((question) => ({x: question?.date, y: question?.value.toString()}))
+    //       .slice(questions?.length - 50, questions?.length - 1);
+    //     console.log(slice)
+    //     setDatas(slice)
+    //   }
+  }, [questions])
 
   const isEmpty = datas?.pop()?.y <= 100;
   const currentImage = isEmpty ?
