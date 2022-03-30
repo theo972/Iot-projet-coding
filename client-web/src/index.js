@@ -10,17 +10,19 @@ import {createFirestoreInstance, firestoreReducer} from "redux-firestore";
 import {Provider} from "react-redux";
 import 'firebase/firestore'
 
+require('dotenv').config()
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCGqqXK82-j3aafkE23C32MddGcEFItoLs",
-  authDomain: "itescia-iot.firebaseapp.com",
-  projectId: "itescia-iot",
-  storageBucket: "itescia-iot.appspot.com",
-  messagingSenderId: "55028690349",
-  appId: "1:55028690349:web:6202ffcdb657574c2d0524"
-}
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID
+};
 const rrfConfig = {
-  userProfile: 'sensors',
-  // useFirestoreForProfile: true // Firestore for Profile instead of Realtime DB
+  userProfile: 'questions',
+  useFirestoreForProfile: true // Firestore for Profile instead of Realtime DB
 }
 
 firebase.initializeApp(firebaseConfig)
@@ -34,7 +36,7 @@ const rootReducer = combineReducers({
 
 const initialState = {}
 const store = createStore(rootReducer, initialState)
-
+console.log(store)
 const rrfProps = {
   firebase,
   config: rrfConfig,
