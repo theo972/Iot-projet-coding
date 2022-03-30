@@ -4,7 +4,16 @@ var C = xbee_api.constants;
 // var storage = require("./storage")
 require('dotenv').config()
 
-var lamp = 0
+
+
+var question = {
+  1: "2022",
+  2: "2020",
+  3: "2023",
+  display: "En quelle année somme nous ?",
+  valid: 1
+}
+
 const SERIAL_PORT = process.env.SERIAL_PORT;
 
 var xbeeAPI = new xbee_api.XBeeAPI({
@@ -18,6 +27,8 @@ let serialport = new SerialPort(SERIAL_PORT, {
     return console.log('Error: ', err.message)
   }
 });
+
+
 
 serialport.pipe(xbeeAPI.parser);
 xbeeAPI.builder.pipe(serialport);
@@ -73,25 +84,63 @@ xbeeAPI.parser.on("data", function (frame) {
     // storage.registerSensor(frame.remote64)
 
   } else if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
-    if (frame.digitalSamples.DIO1 === 0) {
-      if (lamp === 0) {
+    if (frame.digitalSamples.DIO11 === 0) {
+      if (question.valid === 1) {
         var frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
-          destination64: "FFFFFFFFFFFFFFFF",
-          command: "D0",
+          destination64: frame.remote64,
+          command: "P2",
           commandParameter: [0x05],
         };
         xbeeAPI.builder.write(frame_obj);
-        lamp = 1
       } else {
         frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
-          destination64: "FFFFFFFFFFFFFFFF",
-          command: "D0",
-          commandParameter: [0x00],
+          destination64: frame.remote64,
+          command: "D3",
+          commandParameter: [0x05],
         };
         xbeeAPI.builder.write(frame_obj);
-        lamp = 0
+      }
+
+    }
+    if (frame.digitalSamples.DIO1 === 0) {
+      if (question.valid === 2) {
+         frame_obj = { // AT Request to be sent
+          type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+          destination64: frame.remote64,
+          command: "P2",
+          commandParameter: [0x05],
+        };
+        xbeeAPI.builder.write(frame_obj);
+      } else {
+        frame_obj = { // AT Request to be sent
+          type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+          destination64: frame.remote64,
+          command: "D3",
+          commandParameter: [0x05],
+        };
+        xbeeAPI.builder.write(frame_obj);
+      }
+
+    }
+    if (frame.digitalSamples.DIO2 === 0) {
+      if (question.valid === 3) {
+         frame_obj = { // AT Request to be sent
+          type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+          destination64: frame.remote64,
+          command: "P2",
+          commandParameter: [0x05],
+        };
+        xbeeAPI.builder.write(frame_obj);
+      } else {
+        frame_obj = { // AT Request to be sent
+          type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+          destination64: frame.remote64,
+          command: "D3",
+          commandParameter: [0x05],
+        };
+        xbeeAPI.builder.write(frame_obj);
       }
 
     }
@@ -99,8 +148,7 @@ xbeeAPI.parser.on("data", function (frame) {
 
   } else if (C.FRAME_TYPE.REMOTE_COMMAND_RESPONSE === frame.type) {
     console.log("REMOTE_COMMAND_RESPONSE")
-    console.log(frame)
-    console.log( String.fromCharCode.apply(null, frame.commandData))
+
   } else {
     console.debug(frame);
     let dataReceived = String.fromCharCode.apply(null, frame.commandData)
