@@ -1,14 +1,15 @@
-var SerialPort = require('serialport');
-var xbee_api = require('xbee-api');
+var SerialPort = require("serialport");
+var xbee_api = require("xbee-api");
 var C = xbee_api.constants;
 var storage = require("./storage")
 require('dotenv').config()
 
 var lamp = 0
 const SERIAL_PORT = process.env.SERIAL_PORT;
+const status_light = 0;
 
 var xbeeAPI = new xbee_api.XBeeAPI({
-  api_mode: 2
+  api_mode: 2,
 });
 
 let serialport = new SerialPort(SERIAL_PORT, {
@@ -17,7 +18,7 @@ let serialport = new SerialPort(SERIAL_PORT, {
   if (err) {
     return console.log('Error: ', err.message)
   }
-});
+);
 
 var questions = []
 
@@ -73,15 +74,13 @@ xbeeAPI.parser.on("data", function (frame) {
     console.log("C.FRAME_TYPE.ZIGBEE_RECEIVE_PACKET");
     let dataReceived = String.fromCharCode.apply(null, frame.data);
     console.log(">> ZIGBEE_RECEIVE_PACKET >", dataReceived);
-
   }
 
 
   if (C.FRAME_TYPE.NODE_IDENTIFICATION === frame.type) {
     // let dataReceived = String.fromCharCode.apply(null, frame.nodeIdentifier);
     console.log("NODE_IDENTIFICATION");
-    storage.registerSensor(frame.remote64)
-
+    //storage.registerSensor(frame.remote64);
   } else if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
     if (frame.digitalSamples.DIO1 === 0) {
       if (lamp === 0) {
@@ -107,14 +106,14 @@ xbeeAPI.parser.on("data", function (frame) {
     }
     storage.registerSample(frame.remote64,frame.analogSamples.AD0 )
 
+    //storage.registerSample(frame.remote64, frame.analogSamples.AD0);
   } else if (C.FRAME_TYPE.REMOTE_COMMAND_RESPONSE === frame.type) {
     console.log("REMOTE_COMMAND_RESPONSE")
     console.log(frame)
     console.log( String.fromCharCode.apply(null, frame.commandData))
   } else {
     console.debug(frame);
-    let dataReceived = String.fromCharCode.apply(null, frame.commandData)
+    let dataReceived = String.fromCharCode.apply(null, frame.commandData);
     console.log(dataReceived);
   }
-
 });
