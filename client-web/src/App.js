@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import { useSelector } from "react-redux";
 import { useFirestoreConnect } from "react-redux-firebase";
-import db from "./index";
-import {doc, onSnapshot} from 'firebase/firestore';
+import db from "./index"
+
 import {
   HorizontalGridLines,
   LineSeries,
@@ -34,28 +34,70 @@ function App() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [showScore, setShowScore] = useState(false);
   const [score, setScore] = useState(0);
-  let questionsFiltred = [];
-
+  const [questionsFiltred, setQuestionsFiltred] = useState([]);
+  let [changequestion, setChangeQuestion] = useState(0);
 
   function getCurrentQuestion(data) {
+    setCurrentQuestion({
+      display: 'loading',
+      answer1: 'loading',
+      answer2: 'loading',
+      answer3: 'loading',
+      idQuestion: 0,
+    })
+
     return new Promise(resolve => {
       setTimeout(() => {
         let index = Math.floor(Math.random() * data.length)
         setCurrentQuestion(data[index])
         if (questionsFiltred === []) {
-          questionsFiltred = [...questions];
+          setQuestionsFiltred(questions);
           questionsFiltred.splice(index, 1)
         } else {
           questionsFiltred.splice(index, 1)
         }
-        db.collection("currentGame").doc('game').update({
-          endQuestion: 0,
-          idQuestion: data[index].idQuestion,
-          valid: data[index].valid
-        }).then(r => console.log(r))
+
+        if (db !== undefined) {
+          db.collection("currentGame").doc('game').update({
+            endQuestion: 0,
+            idQuestion: data[index].idQuestion,
+            valid: data[index].valid
+          }).then(r => console.log(r))
+        }
         resolve(data);
       }, 1000);
     });
+  }
+
+  function getNextQuestion() {
+    setCurrentQuestion({
+      display: 'loading',
+      answer1: 'loading',
+      answer2: 'loading',
+      answer3: 'loading',
+      idQuestion: 0,
+    })
+    setTimeout(() => {
+      let index = Math.floor(Math.random() * questions.length)
+      setCurrentQuestion(questions[index])
+      setChangeQuestion(0)
+      var nextQuestion = {
+        endQuestion: 0,
+        idQuestion: questions[index].idQuestion,
+        valid: questions[index].valid,
+        user1: 0
+      }
+      db.collection("currentGame").doc('game').update(nextQuestion)
+    }, 1000);
+  }
+
+  if (db !== undefined) {
+    db.collection('currentGame').doc('game').onSnapshot(async function (data) {
+      console.log(changequestion)
+      if (data.data().endQuestion === 1) {
+        setChangeQuestion(1)
+      }
+    })
   }
 
   async function changeCurrentQuestion() {
@@ -66,14 +108,15 @@ function App() {
   }
 
   useEffect(() => {
-    changeCurrentQuestion().then(r => console.log(r))
-
-
-    if (currentQuestion !== undefined && currentQuestion.endQuestion === 1) {
-      getCurrentQuestion(questionsFiltred)
-
+    console.log('tototo')
+    if (changequestion === 1) {
+      getNextQuestion()
     }
+  }, [changequestion]);
 
+  useEffect(() => {
+
+    changeCurrentQuestion()
 
     // if (questions)
     //   {
@@ -84,12 +127,7 @@ function App() {
     //     setDatas(slice)
     //   }
   }, [questions])
-  // db.collection('currentGame').doc('game').onSnapshot(function (data) {
-  //   console.log(data.data())
-  //   // if (data.data().endQuestion === 1) {
-  //   //   getCurrentQuestion(questionsFiltred)
-  //   // }
-  // })
+
   return (
     <div className="app">
         <div className="score-section">

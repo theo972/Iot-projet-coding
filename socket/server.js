@@ -24,17 +24,21 @@ var currentGame = {}
 serialport.pipe(xbeeAPI.parser);
 xbeeAPI.builder.pipe(serialport);
 
+
 storage.getCurrentGame().then((data) => {
   data.forEach((game) => currentGame = game.data())
 
 })
 
 xbeeAPI.parser.on("data", function (frame) {
+
   var currentGameValue = {
     user1: currentGame.user1,
-    endQuestion: currentGame.endQuestion
+    endQuestion: currentGame.endQuestion,
+    valid: currentGame.valid
   }
-  if (currentGameValue.endQuestion === 0) {
+
+  // if (currentGameValue.endQuestion === 0) {
     frame_obj = { // AT Request to be sent
       type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
       destination64: frame.remote64,
@@ -49,12 +53,13 @@ xbeeAPI.parser.on("data", function (frame) {
       command: "P2",
       commandParameter: [0x00],
     };
-  }
+  // }
+
 if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
 
-
     if (frame.digitalSamples.DIO11 === 0) {
-      if (currentGame.valid === 1) {
+
+      if (currentGameValue.valid === 1) {
         var frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
@@ -72,12 +77,16 @@ if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
         };
         xbeeAPI.builder.write(frame_obj);
       }
+
       currentGameValue.user1 = 1
-      storage.addAnswer(currentGameValue)
+
+      if (currentGameValue.user1 !== 0) {
+        storage.addAnswer(currentGameValue)
+      }
 
     }
     if (frame.digitalSamples.DIO1 === 0) {
-      if (currentGame.valid === 2) {
+      if (currentGameValue.valid === 2) {
          frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
@@ -96,10 +105,12 @@ if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
         xbeeAPI.builder.write(frame_obj);
       }
       currentGameValue.user1 = 2
-      storage.addAnswer(currentGameValue)
+      if (currentGameValue.user1 !== 0) {
+        storage.addAnswer(currentGameValue)
+      }
     }
     if (frame.digitalSamples.DIO2 === 0) {
-      if (currentGame.valid === 3) {
+      if (currentGameValue.valid === 3) {
         frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
@@ -118,7 +129,9 @@ if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
         xbeeAPI.builder.write(frame_obj);
       }
       currentGameValue.user1 = 3
-      storage.addAnswer(currentGameValue)
+      if (currentGameValue.user1 !== 0) {
+        storage.addAnswer(currentGameValue)
+      }
     }
   }
 });
