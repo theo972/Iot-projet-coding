@@ -12,14 +12,24 @@ import 'firebase/firestore'
 
 require('dotenv').config()
 
-const firebaseConfig = {
+/*const firebaseConfig = {
   apiKey: process.env.API_KEY,
   authDomain: process.env.AUTH_DOMAIN,
   projectId: process.env.PROJECT_ID,
   storageBucket: process.env.STORAGE_BUCKET,
   messagingSenderId: process.env.MESSAGING_SENDER_ID,
   appId: process.env.APP_ID
+};*/
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC611rYFM-MLtlmbSQSb-4x2kqj8uyz6Xg",
+  authDomain: "projet-iot-coding.firebaseapp.com",
+  projectId: "projet-iot-coding",
+  storageBucket: "projet-iot-coding.appspot.com",
+  messagingSenderId: "562871965807",
+  appId: "1:562871965807:web:6e8eef2ba7aa8ce29fd59a"
 };
+
 const rrfConfig = {
   userProfile: 'questions',
   useFirestoreForProfile: true // Firestore for Profile instead of Realtime DB
