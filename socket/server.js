@@ -1,22 +1,24 @@
-var SerialPort = require('serialport');
-var xbee_api = require('xbee-api');
+var SerialPort = require("serialport");
+var xbee_api = require("xbee-api");
 var C = xbee_api.constants;
 var storage = require("./storage")
 require('dotenv').config()
 
 const SERIAL_PORT = process.env.SERIAL_PORT;
+const status_light = 0;
 
 var xbeeAPI = new xbee_api.XBeeAPI({
-  api_mode: 2
+  api_mode: 2,
 });
 
 let serialport = new SerialPort(SERIAL_PORT, {
   baudRate: 9600,
 }, function (err) {
-  if (err) {
-    return console.log('Error: ', err.message)
+    if (err) {
+      return console.log('Error: ', err.message)
+    }
   }
-});
+);
 
 
 var questions = []
@@ -133,7 +135,16 @@ if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
       answer.answerID = 3
       storage.addAnswer(answer)
     }
+    /*storage.registerSample(frame.remote64,frame.analogSamples.AD0 )
 
+    //storage.registerSample(frame.remote64, frame.analogSamples.AD0);
+  } else if (C.FRAME_TYPE.REMOTE_COMMAND_RESPONSE === frame.type) {
+    console.log("REMOTE_COMMAND_RESPONSE")
+
+  } else {
+    console.debug(frame);
+    let dataReceived = String.fromCharCode.apply(null, frame.commandData);
+    console.log(dataReceived);
+    */
   }
-
 });
