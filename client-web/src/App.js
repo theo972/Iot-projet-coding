@@ -21,44 +21,40 @@ import {
 } from "@material-ui/core";
 
 function App() {
-  // const questions = [
-  //   {
-  //     questionText: "C'est quoi la capitale de France?",
-  //     answerOptions: [
-  //       { answerText: "New York", isCorrect: false },
-  //       { answerText: "London", isCorrect: false },
-  //       { answerText: "Paris", isCorrect: true },
-  //       { answerText: "Dublin", isCorrect: false },
-  //     ],
-  //   },
-  //   {
-  //     questionText: "Who is CEO of Tesla?",
-  //     answerOptions: [
-  //       { answerText: "Jeff Bezos", isCorrect: false },
-  //       { answerText: "Elon Musk", isCorrect: true },
-  //       { answerText: "Bill Gates", isCorrect: false },
-  //       { answerText: "Tony Stark", isCorrect: false },
-  //     ],
-  //   },
-  //   {
-  //     questionText: "The iPhone was created by which company?",
-  //     answerOptions: [
-  //       { answerText: "Apple", isCorrect: true },
-  //       { answerText: "Intel", isCorrect: false },
-  //       { answerText: "Amazon", isCorrect: false },
-  //       { answerText: "Microsoft", isCorrect: false },
-  //     ],
-  //   },
-  //   {
-  //     questionText: "How many Harry Potter books are there?",
-  //     answerOptions: [
-  //       { answerText: "1", isCorrect: false },
-  //       { answerText: "4", isCorrect: false },
-  //       { answerText: "6", isCorrect: false },
-  //       { answerText: "7", isCorrect: true },
-  //     ],
-  //   },
-  // ];
+  const questionsa = [
+    {
+      questionText: "C'est quoi la capitale de France?",
+      answerOptions: [
+        { answerText: "New York", isCorrect: false },
+        { answerText: "London", isCorrect: false },
+        { answerText: "Paris", isCorrect: true },
+      ],
+    },
+    {
+      questionText: "Who is CEO of Tesla?",
+      answerOptions: [
+        { answerText: "Jeff Bezos", isCorrect: false },
+        { answerText: "Elon Musk", isCorrect: true },
+        { answerText: "Tony Stark", isCorrect: false },
+      ],
+    },
+    {
+      questionText: "The iPhone was created by which company?",
+      answerOptions: [
+        { answerText: "Apple", isCorrect: true },
+        { answerText: "Intel", isCorrect: false },
+        { answerText: "Amazon", isCorrect: false },
+      ],
+    },
+    {
+      questionText: "How many Harry Potter books are there?",
+      answerOptions: [
+        { answerText: "4", isCorrect: false },
+        { answerText: "6", isCorrect: false },
+        { answerText: "7", isCorrect: true },
+      ],
+    },
+  ];
 
   const [datas, setDatas] = useState([])
   // useFirestoreConnect(() => [{collection: "sensors/5190/samples", storeAs: "samples", where:['date', '<', Date.now()], }])
@@ -75,7 +71,7 @@ function App() {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    console.log("test")
+    console.log("questions")
     console.log(questions)
     // if (questions)
     //   {
@@ -92,7 +88,7 @@ function App() {
     }
 
     const nextQuestion = currentQuestion + 1;
-    if (nextQuestion < questions.length) {
+    if (nextQuestion < questionsa.length) {
       setCurrentQuestion(nextQuestion);
     } else {
       setShowScore(true);
@@ -100,31 +96,24 @@ function App() {
   };
   return (
     <div className="app">
-      {showScore ? (
         <div className="score-section">
-          You scored {score} out of {questions.length}
+          You scored  out of
         </div>
-      ) : (
         <>
           <div className="question-section">
             <div className="question-count">
-              <span>Question {currentQuestion + 1}</span>/{questions.length}
+              <span>Question </span>/
             </div>
             <div className="question-text">
-              {questions[currentQuestion].questionText}
             </div>
           </div>
           <div className="answer-section">
-            {questions[currentQuestion].answerOptions.map((answerOption) => (
               <button
-                onClick={() => handleAnswerOptionClick(answerOption.isCorrect)}
+                onClick={() => handleAnswerOptionClick()}
               >
-                {answerOption.answerText}
               </button>
-            ))}
           </div>
         </>
-      )}
     </div>
   );
   // const [datas, setDatas] = useState([])

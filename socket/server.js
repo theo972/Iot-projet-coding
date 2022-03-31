@@ -18,7 +18,7 @@ let serialport = new SerialPort(SERIAL_PORT, {
   if (err) {
     return console.log('Error: ', err.message)
   }
-);
+});
 
 var questions = []
 
