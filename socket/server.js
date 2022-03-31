@@ -17,62 +17,44 @@ let serialport = new SerialPort(SERIAL_PORT, {
     if (err) {
       return console.log('Error: ', err.message)
     }
-  }
 });
 
-
-var questions = []
-
-var question = {
-  valid: 2,
-  display: 'Qui sont les meilleurs duos de BD'
-}
+var currentGame = {}
 
 serialport.pipe(xbeeAPI.parser);
 xbeeAPI.builder.pipe(serialport);
 
-// serialport.on("open", function () {
-//
-//   var frame_obj = { // AT Request to be sent
-//     type: C.FRAME_TYPE.AT_COMMAND,
-//     command: "D1",
-//     commandParameter: [],
-//   };
-//
-//   xbeeAPI.builder.write(frame_obj);
-//
-//
-// });
+storage.getCurrentGame().then((data) => {
+  data.forEach((game) => currentGame = game.data())
 
-storage.listQuestions().then((questionsStorage) => {
-  questionsStorage.forEach((question) => questions.push(question.data()))
-  let index = Math.floor(Math.random() * questions.length)
 })
 
-
 xbeeAPI.parser.on("data", function (frame) {
-  var answer = {
-    answerID: null,
-    playerID: frame.remote64,
-    questionID: 1
+  var currentGameValue = {
+    user1: currentGame.user1,
+    endQuestion: currentGame.endQuestion
+  }
+  if (currentGameValue.endQuestion === 0) {
+    frame_obj = { // AT Request to be sent
+      type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+      destination64: frame.remote64,
+      command: "D3",
+      commandParameter: [0x00],
+    };
+    xbeeAPI.builder.write(frame_obj);
+
+    frame_obj = { // AT Request to be sent
+      type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+      destination64: frame.remote64,
+      command: "P2",
+      commandParameter: [0x00],
+    };
   }
 if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
-  frame_obj = { // AT Request to be sent
-    type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
-    destination64: frame.remote64,
-    command: "D3",
-    commandParameter: [0x00],
-  };
-  xbeeAPI.builder.write(frame_obj);
 
-  frame_obj = { // AT Request to be sent
-    type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
-    destination64: frame.remote64,
-    command: "P2",
-    commandParameter: [0x00],
-  };
+
     if (frame.digitalSamples.DIO11 === 0) {
-      if (question.valid === 1) {
+      if (currentGame.valid === 1) {
         var frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
@@ -80,6 +62,7 @@ if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
           commandParameter: [0x05],
         };
         xbeeAPI.builder.write(frame_obj);
+        currentGameValue.endQuestion = 1
       } else {
         frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
@@ -89,18 +72,19 @@ if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
         };
         xbeeAPI.builder.write(frame_obj);
       }
-      answer.answerID = 1
-      storage.addAnswer(answer)
+      currentGameValue.user1 = 1
+      storage.addAnswer(currentGameValue)
 
     }
     if (frame.digitalSamples.DIO1 === 0) {
-      if (question.valid === 2) {
+      if (currentGame.valid === 2) {
          frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
           command: "P2",
           commandParameter: [0x05],
         };
+        currentGameValue.endQuestion = 1
         xbeeAPI.builder.write(frame_obj);
       } else {
         frame_obj = { // AT Request to be sent
@@ -111,17 +95,18 @@ if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
         };
         xbeeAPI.builder.write(frame_obj);
       }
-      answer.answerID = 2
-      storage.addAnswer(answer)
+      currentGameValue.user1 = 2
+      storage.addAnswer(currentGameValue)
     }
     if (frame.digitalSamples.DIO2 === 0) {
-      if (question.valid === 3) {
+      if (currentGame.valid === 3) {
         frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
           command: "P2",
           commandParameter: [0x05],
         };
+        currentGameValue.endQuestion = 1
         xbeeAPI.builder.write(frame_obj);
       } else {
         frame_obj = { // AT Request to be sent
@@ -132,19 +117,8 @@ if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
         };
         xbeeAPI.builder.write(frame_obj);
       }
-      answer.answerID = 3
-      storage.addAnswer(answer)
+      currentGameValue.user1 = 3
+      storage.addAnswer(currentGameValue)
     }
-    /*storage.registerSample(frame.remote64,frame.analogSamples.AD0 )
-
-    //storage.registerSample(frame.remote64, frame.analogSamples.AD0);
-  } else if (C.FRAME_TYPE.REMOTE_COMMAND_RESPONSE === frame.type) {
-    console.log("REMOTE_COMMAND_RESPONSE")
-
-  } else {
-    console.debug(frame);
-    let dataReceived = String.fromCharCode.apply(null, frame.commandData);
-    console.log(dataReceived);
-    */
   }
 });

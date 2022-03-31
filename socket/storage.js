@@ -8,49 +8,18 @@ admin.initializeApp({
 const db = admin.firestore();
 
 
-// module.exports.registerSensor = async function (address) {
-//
-//   const docRef = db.collection('questions').doc(address);
-//
-//   const sensor = {
-//     address: address,
-//     date: Date.now(),
-//   }
-//
-//   await docRef.get().then((snapshotDoc)=> {
-//     if (!snapshotDoc.exists)
-//       docRef.set(sensor);
-//     else
-//       docRef.update(sensor);
-//   })
-// }
-//
-// module.exports.registerSample = async function (address, sample) {
-//
-//   const docRef = db.collection('questions').doc(address)
-//     .collection('questions').doc(Date.now().toString());
-//
-//   const data = {
-//     value: sample,
-//     date: Date.now(),
-//   }
-//   await docRef.set(data);
-//
-//
-// }
-
 module.exports.addAnswer = async function (answer) {
-  const date = new Date();
 
-  const docRef = db.collection('answers').doc(date.toUTCString());
-  const data = {
-    answerID: answer.answerID,
-    dateTime: Date.now(),
-    playerID: answer.playerID,
-    questionID: answer.questionID
-  }
+  const docRef = db.collection('currentGame').doc('game');
 
-  await docRef.set(data);
+  await docRef.get().then((snapshotDoc)=> {
+    if (!snapshotDoc.exists)
+      docRef.set(answer);
+    else
+      docRef.update(answer);
+  })
+
+  // await docRef.set(data);
 }
 
 module.exports.addGame = async function (game) {
@@ -73,3 +42,8 @@ module.exports.listQuestions = function () {
   return docRef.get()
 }
 
+module.exports.getCurrentGame = function () {
+  const docRef = db.collection('currentGame')
+
+  return docRef.get()
+}

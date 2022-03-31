@@ -35,8 +35,8 @@ const rrfConfig = {
   useFirestoreForProfile: true // Firestore for Profile instead of Realtime DB
 }
 
-firebase.initializeApp(firebaseConfig)
-firebase.firestore()
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 
 const rootReducer = combineReducers({
@@ -46,7 +46,6 @@ const rootReducer = combineReducers({
 
 const initialState = {}
 const store = createStore(rootReducer, initialState)
-console.log(store)
 const rrfProps = {
   firebase,
   config: rrfConfig,
@@ -63,6 +62,9 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+
+
+export default db;
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
