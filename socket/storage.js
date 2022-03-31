@@ -10,7 +10,7 @@ const db = admin.firestore();
 
 module.exports.registerSensor = async function (address) {
 
-  const docRef = db.collection('sensors').doc(address);
+  const docRef = db.collection('questions').doc(address);
 
   const sensor = {
     address: address,
@@ -27,8 +27,8 @@ module.exports.registerSensor = async function (address) {
 
 module.exports.registerSample = async function (address, sample) {
 
-  const docRef = db.collection('sensors').doc(address)
-    .collection('samples').doc(Date.now().toString());
+  const docRef = db.collection('questions').doc(address)
+    .collection('questions').doc(Date.now().toString());
 
   const data = {
     value: sample,
@@ -39,9 +39,25 @@ module.exports.registerSample = async function (address, sample) {
 
 }
 
-module.exports.listSensors = function () {
+module.exports.addAnswer = async function (answer) {
 
-  const docRef = db.collection('sensors');
+  var date = new Date()
+
+  const docRef = db.collection('answers').doc(date.toUTCString());
+  const data = {
+    answerID: 1,
+    dateTime: Date.now(),
+    playerID: 1,
+    questionID: 1
+  }
+
+  await docRef.set(data);
+
+}
+
+module.exports.listQuestions = function () {
+
+  const docRef = db.collection('questions');
 
   return docRef.get()
 
