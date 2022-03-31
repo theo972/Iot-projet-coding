@@ -45,7 +45,6 @@ function App() {
       answer3: 'loading',
       idQuestion: 0,
     })
-
     return new Promise(resolve => {
       setTimeout(() => {
         let index = Math.floor(Math.random() * data.length)
@@ -108,24 +107,13 @@ function App() {
   }
 
   useEffect(() => {
-    console.log('tototo')
     if (changequestion === 1) {
       getNextQuestion()
     }
   }, [changequestion]);
 
   useEffect(() => {
-
     changeCurrentQuestion()
-
-    // if (questions)
-    //   {
-    //     const slice = questions
-    //       .map((question) => ({x: question?.date, y: question?.value.toString()}))
-    //       .slice(questions?.length - 50, questions?.length - 1);
-    //     console.log(slice)
-    //     setDatas(slice)
-    //   }
   }, [questions])
 
   return (
