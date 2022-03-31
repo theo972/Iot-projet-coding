@@ -40,8 +40,7 @@ const db = admin.firestore();
 // }
 
 module.exports.addAnswer = async function (answer) {
-
-  var date = new Date()
+  const date = new Date();
 
   const docRef = db.collection('answers').doc(date.toUTCString());
   const data = {
@@ -52,14 +51,25 @@ module.exports.addAnswer = async function (answer) {
   }
 
   await docRef.set(data);
+}
 
+module.exports.addGame = async function (game) {
+  const date = new Date();
+
+  const docRef = db.collection('game').doc(date.toUTCString());
+  const data = {
+    questionID: game.answerID,
+    startDateTime: Date.now(),
+    endDateTime: Date.now() + 30000,
+    winnerID: game.winnerID
+  }
+
+  await docRef.set(data);
 }
 
 module.exports.listQuestions = function () {
-
   const docRef = db.collection('questions');
 
   return docRef.get()
-
 }
 
