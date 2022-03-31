@@ -18,6 +18,7 @@ let serialport = new SerialPort(SERIAL_PORT, {
   }
 });
 
+
 var questions = []
 
 var question = {
@@ -27,6 +28,19 @@ var question = {
 
 serialport.pipe(xbeeAPI.parser);
 xbeeAPI.builder.pipe(serialport);
+
+// serialport.on("open", function () {
+//
+//   var frame_obj = { // AT Request to be sent
+//     type: C.FRAME_TYPE.AT_COMMAND,
+//     command: "D1",
+//     commandParameter: [],
+//   };
+//
+//   xbeeAPI.builder.write(frame_obj);
+//
+//
+// });
 
 storage.listQuestions().then((questionsStorage) => {
   questionsStorage.forEach((question) => questions.push(question.data()))
@@ -41,6 +55,20 @@ xbeeAPI.parser.on("data", function (frame) {
     questionID: 1
   }
 if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
+  frame_obj = { // AT Request to be sent
+    type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+    destination64: frame.remote64,
+    command: "D3",
+    commandParameter: [0x00],
+  };
+  xbeeAPI.builder.write(frame_obj);
+
+  frame_obj = { // AT Request to be sent
+    type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+    destination64: frame.remote64,
+    command: "P2",
+    commandParameter: [0x00],
+  };
     if (frame.digitalSamples.DIO11 === 0) {
       if (question.valid === 1) {
         var frame_obj = { // AT Request to be sent
