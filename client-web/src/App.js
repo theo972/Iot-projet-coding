@@ -10,15 +10,15 @@ function App() {
   useFirestoreConnect(() => [{
     collection: "questions/",
     storeAs: "questions",
-
   }])
   const questions = useSelector((state) => state.firestore.ordered.questions)
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [showScore, setShowScore] = useState(false);
   let [scoreUser1, setScoreUser1] = useState(0);
   let [scoreUser2, setScoreUser2] = useState(0);
   const [questionsFiltred, setQuestionsFiltred] = useState([]);
-  let [changequestion, setChangeQuestion] = useState(0);
+  let [changeQuestion, setChangeQuestion] = useState(0);
 
   function getCurrentQuestion(data) {
     setCurrentQuestion({
@@ -82,7 +82,9 @@ function App() {
 
   if (db !== undefined) {
     db.collection('currentGame').doc('game').onSnapshot(async function (data) {
-      console.log(changequestion)
+      if (data.data().idQuestion !== currentQuestion.idQuestion) {
+        setCurrentQuestion(questions[data.data().idQuestion - 1])
+      }
       if (data.data().endQuestion === 1) {
         if (data.data().user1 === currentQuestion.valid) {
           setScoreUser1(data.data().scoreUser1 + 1 )
@@ -103,10 +105,10 @@ function App() {
   }
 
   useEffect(() => {
-    if (changequestion === 1) {
+    if (changeQuestion === 1) {
       getNextQuestion()
     }
-  }, [changequestion]);
+  }, [changeQuestion]);
 
   useEffect(() => {
     changeCurrentQuestion()

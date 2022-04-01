@@ -57,9 +57,11 @@ xbeeAPI.parser.on("on", function (frame) {
   xbeeAPI.builder.write(frame_obj);
 })
 xbeeAPI.parser.on("data", function (frame) {
+  getGame()
 
   var currentGameValue = {
     user1: currentGame.user1,
+    user2: currentGame.user2,
     endQuestion: currentGame.endQuestion,
   }
 
@@ -79,7 +81,6 @@ xbeeAPI.parser.on("data", function (frame) {
   //   commandParameter: [0x00],
   // };
   // xbeeAPI.builder.write(frame_obj);
-
 
   if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
     getGame()

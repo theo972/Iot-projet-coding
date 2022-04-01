@@ -12,6 +12,7 @@ module.exports.addAnswer = async function (answer) {
 
   const docRef = db.collection('currentGame').doc('game');
 
+  console.log('ttttotot')
   await docRef.get().then((snapshotDoc)=> {
     if (!snapshotDoc.exists)
       docRef.set(answer);
