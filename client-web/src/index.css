@@ -44,6 +44,7 @@ body {
     box-shadow: 10px 10px 42px 0px rgba(0, 0, 0, 0.75);
     display: flex;
     justify-content: space-evenly;
+    flex-direction: column;
 }
 
 .score-section {
@@ -59,7 +60,7 @@ body {
 }
 
 .question-count {
-    margin-top: 100PX;
+    margin-top: 50px;
     margin-bottom: 30px;
 }
 

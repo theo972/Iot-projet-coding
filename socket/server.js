@@ -61,7 +61,6 @@ xbeeAPI.parser.on("data", function (frame) {
   var currentGameValue = {
     user1: currentGame.user1,
     endQuestion: currentGame.endQuestion,
-    valid: currentGame.valid
   }
 
   var frame_obj = { // AT Request to be sent
@@ -84,15 +83,15 @@ xbeeAPI.parser.on("data", function (frame) {
 
   if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
     getGame()
+    console.log(currentGame)
     if (frame.digitalSamples.DIO11 === 0) {
-      if (currentGameValue.valid === 1) {
+      if (currentGame.valid === 1) {
         var frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
           command: "P2",
           commandParameter: [0x05],
         };
-
         xbeeAPI.builder.write(frame_obj);
         currentGameValue.endQuestion = 1
       } else {
@@ -111,7 +110,7 @@ xbeeAPI.parser.on("data", function (frame) {
       }
     }
     if (frame.digitalSamples.DIO1 === 0) {
-      if (currentGameValue.valid === 2) {
+      if (currentGame.valid === 2) {
         frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
@@ -136,7 +135,7 @@ xbeeAPI.parser.on("data", function (frame) {
     }
 
     if (frame.digitalSamples.DIO2 === 0) {
-      if (currentGameValue.valid === 3) {
+      if (currentGame.valid === 3) {
         frame_obj = { // AT Request to be sent
           type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
           destination64: frame.remote64,
