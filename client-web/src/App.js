@@ -4,24 +4,6 @@ import { useSelector } from "react-redux";
 import { useFirestoreConnect } from "react-redux-firebase";
 import db from "./index"
 
-import {
-  HorizontalGridLines,
-  LineSeries,
-  MarkSeries,
-  VerticalGridLines,
-  XAxis,
-  XYPlot,
-  YAxis,
-} from "react-vis";
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
-  Grid,
-  Typography,
-} from "@material-ui/core";
-
 function App() {
 
   const [datas, setDatas] = useState([])
@@ -33,7 +15,8 @@ function App() {
   const questions = useSelector((state) => state.firestore.ordered.questions)
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [showScore, setShowScore] = useState(false);
-  const [score, setScore] = useState(0);
+  let [scoreUser1, setScoreUser1] = useState(0);
+  let [scoreUser2, setScoreUser2] = useState(0);
   const [questionsFiltred, setQuestionsFiltred] = useState([]);
   let [changequestion, setChangeQuestion] = useState(0);
 
@@ -60,7 +43,11 @@ function App() {
           db.collection("currentGame").doc('game').update({
             endQuestion: 0,
             idQuestion: data[index].idQuestion,
-            valid: data[index].valid
+            valid: data[index].valid,
+            user1: 0,
+            user2: 0,
+            scoreUser1: scoreUser1,
+            scoreUser2: scoreUser2
           }).then(r => console.log(r))
         }
         resolve(data);
@@ -84,7 +71,10 @@ function App() {
         endQuestion: 0,
         idQuestion: questions[index].idQuestion,
         valid: questions[index].valid,
-        user1: 0
+        user1: 0,
+        user2: 0,
+        scoreUser1: scoreUser1,
+        scoreUser2: scoreUser2
       }
       db.collection("currentGame").doc('game').update(nextQuestion)
     }, 1000);
@@ -94,6 +84,12 @@ function App() {
     db.collection('currentGame').doc('game').onSnapshot(async function (data) {
       console.log(changequestion)
       if (data.data().endQuestion === 1) {
+        if (data.data().user1 === currentQuestion.valid) {
+          setScoreUser1(data.data().scoreUser1 + 1 )
+        }
+        if (data.data().user2 === currentQuestion.valid) {
+          setScoreUser2(data.data().scoreUser2 + 1)
+        }
         setChangeQuestion(1)
       }
     })
@@ -119,7 +115,10 @@ function App() {
   return (
     <div className="app">
         <div className="score-section">
-          You scored  out of
+          Score Paris :  {scoreUser1}
+        </div>
+        <div className="score-section">
+          Score Courbevoie :  {scoreUser2}
         </div>
         <>
           <div className="question-section">

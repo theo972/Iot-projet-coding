@@ -63,22 +63,22 @@ xbeeAPI.parser.on("data", function (frame) {
     endQuestion: currentGame.endQuestion,
   }
 
-  var frame_obj = { // AT Request to be sent
-    type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
-    destination64: frame.remote64,
-    command: "P2",
-    commandParameter: [0x00],
-  };
-
-  xbeeAPI.builder.write(frame_obj);
-
-  frame_obj = { // AT Request to be sent
-    type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
-    destination64: frame.remote64,
-    command: "D3",
-    commandParameter: [0x00],
-  };
-  xbeeAPI.builder.write(frame_obj);
+  // var frame_obj = { // AT Request to be sent
+  //   type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+  //   destination64: frame.remote64,
+  //   command: "P2",
+  //   commandParameter: [0x00],
+  // };
+  //
+  // xbeeAPI.builder.write(frame_obj);
+  //
+  // frame_obj = { // AT Request to be sent
+  //   type: C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST,
+  //   destination64: frame.remote64,
+  //   command: "D3",
+  //   commandParameter: [0x00],
+  // };
+  // xbeeAPI.builder.write(frame_obj);
 
 
   if (C.FRAME_TYPE.ZIGBEE_IO_DATA_SAMPLE_RX === frame.type) {
